@@ -63,17 +63,21 @@ SelectBase {
     height: auto;
 }
 
+.collapsible_container {
+    width: 100%;
+    height: auto;
+    align: center top;
+}
+
 .selection_list {
     padding: 0 2;
+    width: 75%;
     height: auto;
+    border: tall black;
 }
 
 # Accidentals Select Screen
 AccidentalSelect {
     align: center top;
     width: 100%;
-}
-
-#accidentals_selection_list {
-    width: 60%;
 }

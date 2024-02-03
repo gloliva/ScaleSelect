@@ -110,8 +110,9 @@ class SelectBase(Vertical):
     # Collapsible Title
     COLLAPSIBLE_TITLE: str | None = None
 
-    # SelectionList Class
+    # Shares Classes
     SELECTION_LIST_CLASS = "selection_list"
+    COLLAPSIBLE_CONTAINER_CLASS = "collapsible_container"
 
     # Set of selected attributes
     selected = reactive(set())
@@ -153,10 +154,13 @@ class SelectBase(Vertical):
 
     def compose(self) -> ComposeResult:
         yield Collapsible(
-            SelectionList(
-                *self.selected,
-                id=self.SELECTION_LIST_ID,
-                classes=self.SELECTION_LIST_CLASS,
+            Vertical(
+                SelectionList(
+                    *self.selected,
+                    id=self.SELECTION_LIST_ID,
+                    classes=self.SELECTION_LIST_CLASS,
+                ),
+                classes=self.COLLAPSIBLE_CONTAINER_CLASS,
             ),
             title=self.COLLAPSIBLE_TITLE,
         )
