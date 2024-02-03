@@ -63,6 +63,11 @@ SelectBase {
     height: auto;
 }
 
+.selection_list {
+    padding: 0 2;
+    height: auto;
+}
+
 # Accidentals Select Screen
 AccidentalSelect {
     align: center top;
@@ -70,6 +75,5 @@ AccidentalSelect {
 }
 
 #accidentals_selection_list {
-    height: 10;
     width: 60%;
 }
