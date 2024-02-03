@@ -29,12 +29,18 @@ class ScaleType(Enum):
     MELODIC = "melodic minor"
 
 
-KEY = namedtuple("Key", ["name", "value"])
+Key = namedtuple("Key", ["name", "value", "accidental"])
 
 
 ALL_NATURALS = [Natural.A, Natural.B, Natural.C, Natural.D, Natural.E, Natural.F, Natural.G]
 ALL_ACCIDENTALS = [Accidental.NATURAL, Accidental.SHARP, Accidental.FLAT]
 ALL_KEYS = [
-
+    Key(
+        f"{natural.value}{accidental.value}",
+        f"{natural.value}{accidental.value}",
+        accidental,
+    )
+    for natural in ALL_NATURALS
+    for accidental in ALL_ACCIDENTALS
 ]
 ALL_SCALE_TYPES = [ScaleType.MAJOR, ScaleType.MINOR, ScaleType.HARMONIC, ScaleType.MELODIC]
