@@ -54,10 +54,6 @@ class ResultDisplay(Static):
         self.num_scales = int(scale_input.value)
 
     def compose(self) -> ComposeResult:
-        yield OptionList(
-            Option("Run to display scales", disabled=True),
-            id=self.RESULTS_DISPLAY_ID,
-        )
         yield Horizontal(
             Button(
                 "Generate",
@@ -71,6 +67,10 @@ class ResultDisplay(Static):
                 id=self.GENERATE_NUMBER_ID,
             ),
             id=self.OPTIONS_ROW_ID
+        )
+        yield OptionList(
+            Option("Run to display scales", disabled=True),
+            id=self.RESULTS_DISPLAY_ID,
         )
 
     def on_input_changed(self, event: Input.Changed) -> None:
