@@ -136,7 +136,14 @@ class SelectBase(Vertical):
         selection_list_id = event.selection_list.id
 
         if selection_list_id == self.SELECTION_LIST_ID:
-            self.selected = set(event.selection_list.selected)
+            selected = event.selection_list.selected
+            if len(selected) < 1:
+                selection = list(self.selected)[0]
+                event.selection_list.select(
+                    selection
+                )
+
+            self.selected = set(selected)
 
     def compose(self) -> ComposeResult:
         yield Collapsible(
