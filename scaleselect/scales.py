@@ -7,8 +7,7 @@ from random import choice
 from typing import Iterable, List, Set
 
 # project imports
-from defaults import DEFAULT_EXCLUDE_KEYS
-from defs import ALL_ACCIDENTALS, ALL_KEYS, ALL_SCALE_TYPES
+from defs import ALL_KEYS, ALL_SCALE_TYPES
 
 
 class ExcludeType(Enum):
@@ -30,11 +29,6 @@ class ScaleBuilder:
 
     def build_scales(self) -> None:
         # handle excluded
-        available_accidentals = [
-            accidental
-            for accidental in ALL_ACCIDENTALS
-            if accidental not in self.excluded_accidentals
-        ]
         available_scale_types = [
             scale_type
             for scale_type in ALL_SCALE_TYPES
