@@ -1,5 +1,75 @@
+# Base Widget Rules
+HomePage {
+    align: center top;
+    width: 100%;
+    height: auto;
+}
+
 Title {
     content-align: center middle;
     text-style: bold;
     height: 3;
+}
+
+Rule {
+    margin: 0 0 1 0;
+}
+
+Collapsible {
+    width: 100%;
+    height: auto;
+    border: tall black;
+    content-align: center top;
+    padding: 0 1;
+    margin: 0 0 1 0;
+}
+
+Content {
+    align: center top;
+    width: 100%;
+}
+
+VerticalScroll {
+    width: 80%;
+}
+
+# Result Display Screen
+#results_display_option_list {
+    width: 100%;
+    height: 10;
+    padding: 0 3;
+    border: tall black;
+}
+
+#generate_results_button {
+    width: 17;
+    margin: 0 2 0 0;
+}
+
+#number_to_generate_input {
+    width: 17;
+    height: 3;
+}
+
+#options_row {
+    width: 100%;
+    height: 5;
+    align: center middle;
+}
+
+# Selection Screen Base
+SelectBase {
+    width: 100%;
+    height: auto;
+}
+
+# Accidentals Select Screen
+AccidentalSelect {
+    align: center top;
+    width: 100%;
+}
+
+#accidentals_selection_list {
+    height: 10;
+    width: 60%;
 }
