@@ -5,11 +5,12 @@ Author: Gregg Oliva
 import sys
 
 # project imports
-from ui.app import ScaleSelect
+from ui.app import ScaleZ
 
 
 def main() -> int | None:
-    app = ScaleSelect()
+    app = ScaleZ()
+    app.setup()
     app.run()
     return app.return_code
 
