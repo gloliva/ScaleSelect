@@ -2,59 +2,68 @@
 Author: Gregg Oliva
 """
 # stdlib imports
+from enum import Enum
 from random import choice
 from typing import Iterable, List, Set
 
 # project imports
-from defaults import EXCLUDE_SCALES
+from defaults import DEFAULT_EXCLUDE_KEYS
+from defs import ALL_ACCIDENTALS, ALL_NATURALS, ALL_SCALE_TYPES
 
 
-class Accidental:
-    NATURAL = ""
-    SHARP = "#"
-    FLAT = "b"
+class ExcludeType(Enum):
+    KEYS = 0
+    ACCIDENTALS = 1
+    SCALE_TYPES = 2
 
 
-class Quality:
-    MAJOR = "major"
-    MINOR = "minor"
-    HARMONIC = "harmonic minor"
-    MELODIC = "melodic minor"
-
-
-class Scales:
-    LETTERS = ["A", "B", "C", "D", "E", "F", "G"]
-    ALL_ACCIDENTALS = [Accidental.NATURAL, Accidental.SHARP, Accidental.FLAT]
-    ALL_QUALITIES = [Quality.MAJOR, Quality.MINOR, Quality.HARMONIC, Quality.MELODIC]
-
+class ScaleBuilder:
     def __init__(self) -> None:
         # excluded scales
-        self.excluded_scales: Iterable[str] = []
+        self.excluded_keys: Iterable[str] = []
         self.excluded_accidentals: Iterable[str] = []
-        self.excluded_qualities: Iterable[str] = []
+        self.excluded_scale_types: Iterable[str] = []
 
         # available scales
-        self.scales: Set[str] = self.build_scales()
+        self.scales: Set[str] = set()
+        self.build_scales()
 
-    def build_scales(self) -> Set[str]:
+    def build_scales(self) -> None:
         # handle excluded
-        available_accidentals = [accidental for accidental in self.ALL_ACCIDENTALS if accidental not in self.excluded_accidentals]
-        available_qualities = [quality for quality in self.ALL_QUALITIES if quality not in self.excluded_qualities]
+        available_accidentals = [
+            accidental
+            for accidental in ALL_ACCIDENTALS
+            if accidental not in self.excluded_accidentals
+        ]
+        available_scale_types = [
+            scale_type
+            for scale_type in ALL_SCALE_TYPES
+            if scale_type not in self.excluded_scale_types
+        ]
 
         scales = set()
 
-        for letter in self.LETTERS:
+        for natural_note in ALL_NATURALS:
             for accidental in available_accidentals:
-                if f"{letter}{accidental}" in EXCLUDE_SCALES:
+                key = f"{natural_note}{accidental.value}"
+                if f"{key}" in self.excluded_keys:
                     continue
 
-                for quality in available_qualities:
-                    scale = f"{letter}{accidental} {quality}"
+                for scale_type in available_scale_types:
+                    scale = f"{key} {scale_type.value}"
                     scales.add(scale)
 
-        return scales
+        self.scales = scales
 
-    def get_random(self, n: int = 1,) -> List[str]:
+    def update_excludes(self, exclude_type: ExcludeType, exclude_list: Iterable) -> None:
+        if exclude_type == ExcludeType.KEYS:
+            self.excluded_keys = exclude_list
+        elif exclude_type == ExcludeType.ACCIDENTALS:
+            self.excluded_accidentals = exclude_list
+        elif exclude_type == ExcludeType.SCALE_TYPES:
+            self.excluded_scale_types = exclude_list
+
+    def get_random(self, n: int = 1) -> List[str]:
         scales = []
         available_scales = list(self.scales.copy())
 
