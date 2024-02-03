@@ -8,7 +8,7 @@ from typing import Iterable, List, Set
 
 # project imports
 from defaults import DEFAULT_EXCLUDE_KEYS
-from defs import ALL_ACCIDENTALS, ALL_NATURALS, ALL_SCALE_TYPES
+from defs import ALL_ACCIDENTALS, ALL_KEYS, ALL_SCALE_TYPES
 
 
 class ExcludeType(Enum):
@@ -43,15 +43,16 @@ class ScaleBuilder:
 
         scales = set()
 
-        for natural_note in ALL_NATURALS:
-            for accidental in available_accidentals:
-                key = f"{natural_note}{accidental.value}"
-                if f"{key}" in self.excluded_keys:
-                    continue
+        for key in ALL_KEYS:
+            if key in self.excluded_keys:
+                continue
 
-                for scale_type in available_scale_types:
-                    scale = f"{key} {scale_type.value}"
-                    scales.add(scale)
+            if key.accidental in self.excluded_accidentals:
+                continue
+
+            for scale_type in available_scale_types:
+                scale = f"{key.value} {scale_type.value}"
+                scales.add(scale)
 
         self.scales = scales
 
@@ -66,6 +67,9 @@ class ScaleBuilder:
     def get_random(self, n: int = 1) -> List[str]:
         scales = []
         available_scales = list(self.scales.copy())
+
+        if not available_scales:
+            return []
 
         for _ in range(n):
             selected = choice(available_scales)
