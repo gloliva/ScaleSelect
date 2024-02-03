@@ -90,6 +90,9 @@ class ResultDisplay(Static):
             scales = self.app.scale_builder.get_random(self.num_scales)
             scales_display = self.query_one(f"#{self.RESULTS_DISPLAY_ID}", OptionList)
 
+            if not scales:
+                scales = [Option("No scales to display", disabled=True)]
+
             scales_display.clear_options()
             scales_display.add_options(scales)
 
@@ -106,6 +109,9 @@ class SelectBase(Vertical):
 
     # Collapsible Title
     COLLAPSIBLE_TITLE: str | None = None
+
+    # SelectionList Class
+    SELECTION_LIST_CLASS = "selection_list"
 
     # Set of selected attributes
     selected = reactive(set())
@@ -150,6 +156,7 @@ class SelectBase(Vertical):
             SelectionList(
                 *self.selected,
                 id=self.SELECTION_LIST_ID,
+                classes=self.SELECTION_LIST_CLASS,
             ),
             title=self.COLLAPSIBLE_TITLE,
         )
