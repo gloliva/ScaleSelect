@@ -12,7 +12,6 @@ from textual.containers import (
     Vertical,
     VerticalScroll,
 )
-from textual.reactive import reactive
 from textual.widgets import (
     Button,
     Collapsible,
@@ -29,11 +28,11 @@ from defs import (
     Accidental,
     Natural,
     ScaleType,
+    ExcludeType,
     ALL_ACCIDENTALS,
     ALL_KEYS,
     ALL_SCALE_TYPES,
 )
-from scales import ExcludeType
 
 
 class Title(Static):
@@ -102,7 +101,8 @@ class SelectBase(Vertical):
     EXCLUDE_TYPE: ExcludeType | None = None
 
     # ID of SelectionList
-    SELECTION_LIST_ID: str | None = None
+    NUM_SELECTION_LISTS: int | None = None
+    SELECTION_LIST_ID_PREFIX: str | None = None
 
     # Selection Type
     SELECTION_TYPE_LIST: List[Natural | Accidental | ScaleType] = None
@@ -110,56 +110,49 @@ class SelectBase(Vertical):
     # Collapsible Title
     COLLAPSIBLE_TITLE: str | None = None
 
-    # Shares Classes
-    SELECTION_LIST_CLASS = "selection_list"
+    # Shared Classes
+    SELECTION_LIST_CLASS: str | None = None
     COLLAPSIBLE_CONTAINER_CLASS = "collapsible_container"
-
-    # Set of selected attributes
-    selected = reactive(set())
-
-    def on_mount(self) -> None:
-        selected = []
-
-        for select_type in self.SELECTION_TYPE_LIST:
-            selected.append(
-                (select_type.name.capitalize(), select_type, True)
-            )
-
-        selection_list = self.app.query_one(f"#{self.SELECTION_LIST_ID}", SelectionList)
-        selection_list.clear_options()
-        selection_list.add_options(selected)
-
-    def watch_selected(self, selected: List[Natural | Accidental | ScaleType]) -> None:
-        excluded_types = set()
-
-        for select_type in self.SELECTION_TYPE_LIST:
-            if select_type not in selected:
-                excluded_types.add(select_type)
-
-        self.app.scale_builder.update_excludes(self.EXCLUDE_TYPE, excluded_types)
-        self.app.scale_builder.build_scales()
 
     def on_selection_list_selected_changed(self, event: SelectionList.SelectedChanged):
         selection_list_id = event.selection_list.id
+        index = int(selection_list_id.split("_")[-1])
+        selected = event.selection_list.selected
 
-        if selection_list_id == self.SELECTION_LIST_ID:
-            selected = event.selection_list.selected
-            if len(selected) < 1:
-                selection = list(self.selected)[0]
-                event.selection_list.select(
-                    selection
-                )
+        self.app.selection_manager.update_selections(
+            selected,
+            self.EXCLUDE_TYPE,
+            index,
+        )
+        excluded_selections = self.app.selection_manager.get_excluded_selections(
+            self.EXCLUDE_TYPE,
+            index,
+        )
 
-            self.selected = set(selected)
+        self.app.scale_builder.update_excludes(self.EXCLUDE_TYPE, excluded_selections)
+        self.app.scale_builder.build_scales()
 
     def compose(self) -> ComposeResult:
+        # Init the selection bank
+        self.app.selection_manager.init_selection_bank(
+            self.NUM_SELECTION_LISTS,
+            self.SELECTION_TYPE_LIST,
+            self.EXCLUDE_TYPE,
+        )
+
+        # Create the selection list objects
+        selection_lists = [
+            SelectionList(
+                *self.app.selection_manager.get_selection_list_entries(self.EXCLUDE_TYPE, num),
+                id=f"{self.SELECTION_LIST_ID_PREFIX}_{num}",
+                classes=self.SELECTION_LIST_CLASS
+            )
+            for num in range(self.NUM_SELECTION_LISTS)
+        ]
+
         yield Collapsible(
-            Vertical(
-                SelectionList(
-                    *self.selected,
-                    id=self.SELECTION_LIST_ID,
-                    classes=self.SELECTION_LIST_CLASS,
-                ),
+            Horizontal(
+                *selection_lists,
                 classes=self.COLLAPSIBLE_CONTAINER_CLASS,
             ),
             title=self.COLLAPSIBLE_TITLE,
@@ -168,23 +161,29 @@ class SelectBase(Vertical):
 
 class KeySelect(SelectBase):
     EXCLUDE_TYPE = ExcludeType.KEYS
-    SELECTION_LIST_ID = "key_selection_list"
+    NUM_SELECTION_LISTS = 3
+    SELECTION_LIST_ID_PREFIX = "key_selection_list"
     SELECTION_TYPE_LIST = ALL_KEYS
     COLLAPSIBLE_TITLE = "Select Keys"
+    SELECTION_LIST_CLASS = "key_selection_list"
 
 
 class ScaleTypeSelect(SelectBase):
     EXCLUDE_TYPE = ExcludeType.SCALE_TYPES
-    SELECTION_LIST_ID = "scale_type_selection_list"
+    NUM_SELECTION_LISTS = 1
+    SELECTION_LIST_ID_PREFIX = "scale_type_selection_list"
     SELECTION_TYPE_LIST = ALL_SCALE_TYPES
     COLLAPSIBLE_TITLE = "Select Scale Types"
+    SELECTION_LIST_CLASS = "scale_type_selection_list"
 
 
 class AccidentalSelect(SelectBase):
     EXCLUDE_TYPE = ExcludeType.ACCIDENTALS
-    SELECTION_LIST_ID = "accidentals_selection_list"
+    NUM_SELECTION_LISTS = 1
+    SELECTION_LIST_ID_PREFIX = "accidentals_selection_list"
     SELECTION_TYPE_LIST = ALL_ACCIDENTALS
     COLLAPSIBLE_TITLE = "Select Accidentals"
+    SELECTION_LIST_CLASS = "accidental_selection_list"
 
 
 class Content(Container):

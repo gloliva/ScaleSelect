@@ -8,6 +8,7 @@ from textual.binding import Binding
 # project imports
 from scales import ScaleBuilder
 from ui.interface import HomePage
+from ui.selections import SelectionManager
 from ui.styles import get_css_files
 
 
@@ -19,6 +20,7 @@ class ScaleZ(App[int]):
 
     def setup(self) -> None:
         self.scale_builder = ScaleBuilder()
+        self.selection_manager = SelectionManager()
 
     def compose(self) -> ComposeResult:
         yield HomePage()
