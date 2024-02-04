@@ -60,12 +60,13 @@ class SelectionManager:
             enabled = False if selection not in selection_list_entries else True
             selections[selection] = enabled
 
-    def get_excluded_selections(self, selection_type: ExcludeType, index: int) -> Set:
-        selections = self.selected[selection_type.value][index]
+    def get_excluded_selections(self, selection_type: ExcludeType) -> Set:
+        all_selections = self.selected[selection_type.value]
         excluded_selections = set()
 
-        for selection, enabled in selections.items():
-            if not enabled:
-                excluded_selections.add(selection)
+        for selection_section in all_selections.values():
+            for selection, enabled in selection_section.items():
+                if not enabled:
+                    excluded_selections.add(selection)
 
         return excluded_selections

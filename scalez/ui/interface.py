@@ -124,10 +124,7 @@ class SelectBase(Vertical):
             self.EXCLUDE_TYPE,
             index,
         )
-        excluded_selections = self.app.selection_manager.get_excluded_selections(
-            self.EXCLUDE_TYPE,
-            index,
-        )
+        excluded_selections = self.app.selection_manager.get_excluded_selections(self.EXCLUDE_TYPE)
 
         self.app.scale_builder.update_excludes(self.EXCLUDE_TYPE, excluded_selections)
         self.app.scale_builder.build_scales()
