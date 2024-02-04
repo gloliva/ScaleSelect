@@ -11,15 +11,10 @@ from defs import (
     Accidental,
     ScaleType,
     Key,
+    ExcludeType,
     ALL_KEYS,
     ALL_SCALE_TYPES,
 )
-
-
-class ExcludeType(Enum):
-    KEYS = 0
-    ACCIDENTALS = 1
-    SCALE_TYPES = 2
 
 
 class ScaleBuilder:
