@@ -64,6 +64,18 @@ SelectBase {
     height: auto;
 }
 
+.selection_buttons {
+    border: tall black;
+    margin: 0 4 0 4;
+}
+
+.selection_button_row {
+    width: 100%;
+    height: 3;
+    margin: 0 0 1 0;
+    align: center middle;
+}
+
 .collapsible_container {
     width: 100%;
     height: auto;

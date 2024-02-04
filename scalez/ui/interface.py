@@ -82,7 +82,7 @@ class ResultDisplay(Static):
                 value = 0
             self.num_scales = int(value)
 
-    def on_button_pressed(self, event: Button.Pressed):
+    def on_button_pressed(self, event: Button.Pressed) -> None:
         button_id = event.button.id
 
         if button_id == self.GENERATE_RESULTS_ID:
@@ -112,10 +112,13 @@ class SelectBase(Vertical):
 
     # Shared Classes
     SELECTION_LIST_CLASS: str | None = None
+    SELECTION_BUTTONS_CLASS = "selection_buttons"
+    SELECTION_BUTTON_ROW_CLASS = "selection_button_row"
     COLLAPSIBLE_CONTAINER_CLASS = "collapsible_container"
 
-    def on_selection_list_selected_changed(self, event: SelectionList.SelectedChanged):
+    def on_selection_list_selected_changed(self, event: SelectionList.SelectedChanged) -> None:
         selection_list_id = event.selection_list.id
+        print(selection_list_id)
         index = int(selection_list_id.split("_")[-1])
         selected = event.selection_list.selected
 
@@ -128,6 +131,25 @@ class SelectBase(Vertical):
 
         self.app.scale_builder.update_excludes(self.EXCLUDE_TYPE, excluded_selections)
         self.app.scale_builder.build_scales()
+
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        button_id = event.button.id
+
+        selection_lists = [
+            self.app.query_one(f"#{self.SELECTION_LIST_ID_PREFIX}_{num}", SelectionList)
+            for num in range(self.NUM_SELECTION_LISTS)
+        ]
+        print(selection_lists)
+
+        if button_id == f"{self.EXCLUDE_TYPE.name}_select_all_button".lower():
+            for selection_list in selection_lists:
+                selection_list.select_all()
+        elif button_id == f"{self.EXCLUDE_TYPE.name}_deselect_all_button".lower():
+            for selection_list in selection_lists:
+                selection_list.deselect_all()
+        elif button_id == f"{self.EXCLUDE_TYPE.name}_toggle_all_button".lower():
+            for selection_list in selection_lists:
+                selection_list.toggle_all()
 
     def compose(self) -> ComposeResult:
         # Init the selection bank
@@ -148,6 +170,24 @@ class SelectBase(Vertical):
         ]
 
         yield Collapsible(
+            Horizontal(
+                Button(
+                    "Select All",
+                    id=f"{self.EXCLUDE_TYPE.name}_select_all_button".lower(),
+                    classes=self.SELECTION_BUTTONS_CLASS,
+                ),
+                Button(
+                    "Deselect All",
+                    id=f"{self.EXCLUDE_TYPE.name}_deselect_all_button".lower(),
+                    classes=self.SELECTION_BUTTONS_CLASS,
+                ),
+                Button(
+                    "Toggle All",
+                    id=f"{self.EXCLUDE_TYPE.name}_toggle_all_button".lower(),
+                    classes=self.SELECTION_BUTTONS_CLASS,
+                ),
+                classes=self.SELECTION_BUTTON_ROW_CLASS,
+            ),
             Horizontal(
                 *selection_lists,
                 classes=self.COLLAPSIBLE_CONTAINER_CLASS,
